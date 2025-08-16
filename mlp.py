@@ -1,35 +1,49 @@
-# Importing necessary libraries.
-from sklearn.neural_network import MLPRegressor
-from sklearn.datasets import load_diabetes
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.metrics import mean_squared_error, r2_score
+import numpy as np
 
-# Loading the dataset.
-diabetes_data = load_diabetes()
-diab_x, diab_y = diabetes_data.data, diabetes_data.target
+class MLP:
+    def __init__(self, input_size, hidden_size, output_size):
+        '''Method intended to randomly initialise weights and set biases to 0.
+        Parameters: Int, Int, Int
+        Return: Void'''
+        self.weights_input_hidden = np.random.randn(input_size, hidden_size)
+        self.weights_output_hidden = np.random.randn(hidden_size, output_size)
+        self.bias_input_hidden = np.zeros((1, hidden_size))
+        self.bias_output_hidden = np.zeros((1, output_size))
 
-# Splitting training and testing such that 80% of the dataset will be used for training, the rest for testing.
-x_train, x_test, y_train, y_test = train_test_split(diab_x, diab_y, test_size=0.2, random_state=42)
+    def forward_propagate(self, X):
+        '''Method intended to forward propagate by computing activations using functions defined below.
+        Parameters: Double
+        Return: Void'''
+        self.hidden_input = np.dot(X, self.weights_input_hidden) + self.bias_input_hidden
+        self.hidden_output = self.sigmoid(self.hidden_input)
+        self.final_input = np.dot(self.hidden_output, self.weights_hidden_output) + self.bias_output
+        self.final_output = self.softmax(self.final_output)
 
-# Computes and scales the mean and standard deviation of training data.
-scaler = StandardScaler()
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.transform(x_test)
+    def backward_propagate(self, X, y, output, learning_rate):
+        output_error = output - y
+        hidden_error = np.dot(output_error, self.weights_hidden_output.T) * self.hidden_output * (1 - self.hidden_output)
 
-'''Creates the MLP. There will be 2 hidden layers, one with 64 neurons and the other with 32, there 
-will be at most 1000 iterations to adjust weights and biases, and the random state ensures reproducability.'''
-diab_mlp = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=1000, random_state=42)
+        
 
-# Training the MLP.
-diab_mlp.fit(x_train, y_train)
 
-# Outputing predictions and accuracy using weights and biases.
-y_pred = diab_mlp.predict(x_test)
+    def sigmoid(self, x):
+        '''Method intended to take a value x and output a value calculated with sigmoid function.
+        Parameters: Double
+        Return: Double'''
+        return 1/(1 + np.exp(-x))
 
-# Metrics using mean squared error and r^2 score.
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-print(f"Mean Squared Error: {mse:.2f}")
-print(f"R^2 Score: {r2:.2f}")
+    def softmax(self, x):
+        '''Method intended to take a value x and output a value calculated with softmax function.
+        Parameters: Double
+        Return: Double'''
+        exp_x = np.exp(x-np.max(x))
+        return exp_x / exp_x.sum(axis=1, keepdims=True)
+
+    def ReLu(self, x):
+        '''Method intended to take a value x and output a value calculated with ReLu function.
+        Parameters: Double
+        Return: Double'''
+        if x > 0:
+            return x
+        else: 
+            return 0
