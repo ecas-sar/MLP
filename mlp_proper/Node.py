@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 class Node:
     def __init__(self, num_inputs, activation_function="SIGMOID"):
@@ -49,10 +50,22 @@ class Node:
             return 1
 
     def forward_propagate(self, inputs):
-        '''Forward propogation, takes input and calculates output.
+        '''Forward propogation, takes input and calculates predicted output.
         Parameters: List
         Output: Double'''
         self.input = inputs
         z = sum(w*x for w, x in zip(self.weights, inputs)) + self.bias
         self.output = self.activation_function(z)
         return self.output
+
+    def backward_propagate(self, inputs, actual_outputs, learning_rate):
+        output_predicted = self.forward_propagate(inputs)
+        output_error = actual_outputs - output_predicted # Be careful here, convention may require this to be the other way.
+        output_delta = output_error * self.activation_function_derivative(output_predicted)
+
+        hidden_error = np.dot(output_delta, self.weights.T)
+        hidden_delta = hidden_error*self.activation_function_derivative(self.output)
+
+        
+        self.weights -= learning_rate * np.dot(inputs.T, hidden_delta) # np.dot is ok for Stochastic Gradient Descent, but this may need to be outer for mini-batch training.
+        self.bias -= learning_rate * output_delta
