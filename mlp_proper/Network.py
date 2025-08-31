@@ -35,4 +35,16 @@ class Network:
         Return: Void'''
         for layer in reversed(self.layers):
             loss_grad = layer.backward_propagate(loss_grad, learning_rate)
+
+    def loss_function(self, num_samples, outputs_true, outputs_pred, num_classes):
+        '''Cross-Entropy Loss algorithm for loss function as it is a popular example for this.
+        Paremters: Int, Double[][], Double[][]
+        Void: Double''' 
+
+        # Avoid log(0) errors by clipping
+        eps = 1e-15
+        outputs_pred = np.clip(outputs_pred, eps, 1 - eps)
+
+        loss = (-1)*(1/num_samples)*np.sum(outputs_true*np.log(outputs_pred))
+        return loss
             
