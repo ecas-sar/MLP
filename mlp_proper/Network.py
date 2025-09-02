@@ -1,5 +1,7 @@
+import Layer
+
 class Network:
-    def __init__(self, num_hidden_layers):
+    def __init__(self):
         '''Constructor to create network for MINST.
         Parameters: Int
         Return: Void'''
@@ -7,12 +9,12 @@ class Network:
         self.hidden_layer_one = Layer.Layer(300, 100, "RELU")
         self.hidden_layer_two = Layer.Layer(100, 100, "RELU")
         self.hidden_layer_three = Layer.Layer(100, 100, "RELU")
-        self.output_layer = Layer.Layer(100, 10)
+        self.output_layer = Layer.Layer(100, 10, "SIGMOID", True)
         self.layers = []
         self.fill_layers()
 
     def fill_layers(self):
-        '''Fills self.layers, this looks more readables in its own method than in the constructor.
+        '''Fills self.layers, this looks more readable in its own method than in the constructor.
         Parameters: Void
         Return: Void'''
         self.layers.append(self.input_layer)
@@ -27,6 +29,8 @@ class Network:
         Return: Int'''
         for layer in self.layers:
             inputs = layer.forward_propagate(inputs)
+            if layer.output_layer == True:
+                inputs = layer.softmax(inputs)
         return inputs
     
     def backward_propagate(self, loss_grad, learning_rate):
@@ -36,7 +40,7 @@ class Network:
         for layer in reversed(self.layers):
             loss_grad = layer.backward_propagate(loss_grad, learning_rate)
 
-    def loss_function(self, num_samples, outputs_true, outputs_pred, num_classes):
+    def loss_function(self, num_samples, outputs_true, outputs_pred):
         '''Cross-Entropy Loss algorithm for loss function as it is a popular example for this.
         Paremters: Int, Double[][], Double[][]
         Void: Double''' 
@@ -47,4 +51,9 @@ class Network:
 
         loss = (-1)*(1/num_samples)*np.sum(outputs_true*np.log(outputs_pred))
         return loss
-            
+
+    def loss_derivative(self, outputs_true, outputs_pred):
+        loss_vector = []
+        for i in range(outputs_true):
+            loss_vector.append((outputs_pred[i]-outputs_true[i]))
+        return loss_vector

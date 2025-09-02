@@ -20,31 +20,31 @@ class Node:
         # Gradient used for backward propogation.
         self.delta = None
 
-    def activation_function(self, x):
+    def activation(self, x):
         '''Activation function for whatever is chosed for it.
         Parameters: Double
         Return: Double'''
-        if activation_function=="SIGMOID":
+        if self.activation_function=="SIGMOID":
             return 1/(1+math.exp(-x))
-        elif activation_function=="RELU":
-            return max(0, x)
-        elif activation_function=="TANH":
+        elif self.activation_function=="RELU":
+            return np.maximum(0, x)
+        elif self.activation_function=="TANH":
             return math.tanh(x)
         else: # Linear
             return x
 
-    def activation_function_derivative(self, x):
+    def activation_derivative(self, x):
         '''Derivative of each activation function.
         Parameters: Double
         Return: Double'''
-        if activation_function=="SIGMOID":
+        if self.activation_function=="SIGMOID":
             return math.exp(-x)/((1+math.exp(-x))**2)
-        elif activation_function=="RELU":
+        elif self.activation_function=="RELU":
             if x > 0:
                 return x 
             else: 
                 return 0
-        elif activation_function=="TANH":
+        elif self.activation_function=="TANH":
             return 1/(1+x**2)
         else: # Linear
             return 1
@@ -54,17 +54,17 @@ class Node:
         Parameters: List
         Output: Double'''
         self.input = inputs
-        z = sum(w*x for w, x in zip(self.weights, inputs)) + self.bias
-        self.output = self.activation_function(z)
+        z = np.dot(inputs, self.weights) + self.bias
+        self.output = self.activation(z)
         return self.output
 
     def backward_propagate(self, inputs, actual_outputs, learning_rate):
         output_predicted = self.forward_propagate(inputs)
         output_error = actual_outputs - output_predicted # Be careful here, convention may require this to be the other way.
-        output_delta = output_error * self.activation_function_derivative(output_predicted)
+        output_delta = output_error * self.activation_derivative(output_predicted)
 
         hidden_error = np.dot(output_delta, self.weights.T)
-        hidden_delta = hidden_error*self.activation_function_derivative(self.output)
+        hidden_delta = hidden_error*self.activation_derivative(self.output)
 
         
         self.weights -= learning_rate * np.dot(inputs.T, hidden_delta) # np.dot is ok for Stochastic Gradient Descent, but this may need to be outer for mini-batch training.
