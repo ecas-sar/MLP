@@ -11,6 +11,6 @@ class Trainer:
             output = self.network.forward_propagate(x_batch)
             loss = self.network.loss_function(len(y_batch), y_batch, output)
             grad = self.network.loss_derivative(y_batch, output)
-            self.network.backward_propogate(grad, self.learning_rate)
+            self.network.backward_propagate(grad, self.learning_rate)
             print(f"Epoch {epoch+1}/{self.num_epochs}, Loss: {loss:.4f}")
 

@@ -1,4 +1,5 @@
 import Layer
+import numpy as np
 
 class Network:
     def __init__(self):
@@ -38,7 +39,7 @@ class Network:
         Parameters: Double, Double
         Return: Void'''
         for layer in reversed(self.layers):
-            loss_grad = layer.backward_propagate(loss_grad, learning_rate)
+            loss_grad = layer.backward_propogate(loss_grad, learning_rate)
 
     def loss_function(self, num_samples, outputs_true, outputs_pred):
         '''Cross-Entropy Loss algorithm for loss function as it is a popular example for this.
@@ -53,7 +54,4 @@ class Network:
         return loss
 
     def loss_derivative(self, outputs_true, outputs_pred):
-        loss_vector = []
-        for i in range(outputs_true):
-            loss_vector.append((outputs_pred[i]-outputs_true[i]))
-        return loss_vector
+        return outputs_pred - outputs_true
