@@ -5,7 +5,7 @@ import numpy as np
 class Node:
     def __init__(self, num_inputs, activation_function="SIGMOID"):
         # Weights and biases chosen randomly so that every neuron doesn't remain the same. Stored in an np array to avoid nans.
-        self.weights = np.array([random.uniform(-1, 1) for _ in range(num_inputs)], dtype=float)
+        self.weights = np.random.uniform(-1, 1, size=(num_inputs,))
         self.bias = random.uniform(-1, 1)
 
         # Creates activation function, sets it to upper case to account for capitalisation differences.
@@ -37,10 +37,11 @@ class Node:
         Parameters: Double
         Return: Double'''
         if self.activation_function=="SIGMOID":
-            return np.exp(-np.clip(x, -500, 500))/((1+np.exp(-np.clip(x, -500, 500)))**2)
+            sig = self.activation(x)
+            return sig*(1-sig)
         elif self.activation_function=="RELU":
             if x > 0:
-                return x 
+                return 1 
             else: 
                 return 0
         elif self.activation_function=="TANH":
@@ -62,10 +63,12 @@ class Node:
         output_delta = output_error * self.activation_derivative(output_predicted)
 
         hidden_error = np.dot(output_delta, self.weights)
-        hidden_delta = hidden_error*self.activation_derivative(self.output)
+        hidden_delta = hidden_error*self.activation_derivative(output_predicted)
 
+        weight_grad = np.dot(inputs.T, hidden_delta) # np.dot is ok for Stochastic Gradient Descent, but this may need to be outer for mini-batch training.
+        bias_grad = output_delta
         
-        self.weights -= learning_rate * np.dot(inputs.T, hidden_delta) # np.dot is ok for Stochastic Gradient Descent, but this may need to be outer for mini-batch training.
-        self.bias -= learning_rate * output_delta
+        self.weights -= learning_rate * np.clip(weight_grad, -1, 1)
+        self.bias -= learning_rate * np.clip(bias_grad, -1, 1)
 
         return output_delta*self.weights

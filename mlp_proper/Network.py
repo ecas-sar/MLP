@@ -54,4 +54,4 @@ class Network:
         return loss
 
     def loss_derivative(self, outputs_true, outputs_pred):
-        return outputs_pred - outputs_true
+        return   outputs_pred - outputs_true
