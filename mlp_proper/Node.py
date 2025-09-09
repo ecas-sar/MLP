@@ -59,6 +59,10 @@ class Node:
         return self.output
 
     def backward_propagate(self, inputs, output_error, learning_rate):
+        '''Backward progpogation, takes inputs, error, and learning rate and applies the activation derivatives and other maths
+        to backprop.
+        Parameters: List, Double, Double
+        Return: Double'''
         if inputs.ndim > 1:
             inputs = inputs.flatten()
 

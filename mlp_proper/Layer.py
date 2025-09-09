@@ -8,10 +8,16 @@ class Layer:
         self.last_input = None
 
     def forward_propagate(self, inputs):
+        '''Forward propogates with each node in the layer.
+        Parameters: np.array
+        Return: np.array'''
         self.last_input = inputs
         return np.array([node.forward_propagate(inputs) for node in self.nodes])
 
     def backward_propogate(self, errors, learning_rate):
+        '''Backward propogates with each node in the layer.
+        Parameters: np.array, Double
+        Return: Double'''
         prev_errors = np.zeros_like(self.last_input)
 
         for node, e in zip(self.nodes, errors):
@@ -19,6 +25,9 @@ class Layer:
         return prev_errors
 
     def softmax(self, inputs):
+        '''Softmax activation function as this works well with cross entropy loss.
+        Parameters: np.array
+        Return: np.array'''
         shifted_inputs = inputs - np.max(inputs)
         numerator = np.exp(shifted_inputs)
         denominator = np.sum(numerator)

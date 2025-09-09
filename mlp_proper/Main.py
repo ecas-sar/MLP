@@ -1,6 +1,6 @@
 import numpy as np
 import Trainer
-# Fake 10-sample batch of 784-length vectors
+# Fake 10-sample batch of 784-length vectors and normalises them to stop the weights from exploding.
 x_batch = np.random.rand(10, 784)
 x_batch = (x_batch - np.mean(x_batch)) / np.std(x_batch)
 

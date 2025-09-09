@@ -57,4 +57,8 @@ class Network:
         return loss
 
     def loss_derivative(self, outputs_true, outputs_pred):
-        return   outputs_pred - outputs_true
+        '''Gradient vector of loss function is just difference between true and predicted outputs vector due to the
+        use of softmax activation function and cross entropy loss function.
+        Parameters: List, List
+        Return: List'''
+        return outputs_pred - outputs_true

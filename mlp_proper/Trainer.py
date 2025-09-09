@@ -7,6 +7,9 @@ class Trainer:
         self.learning_rate = learning_rate
 
     def training_loop(self, x_batch, y_batch):
+        '''Training Loop:
+        Parameters: np.array, np.array
+        Return: Void'''
         for epoch in range(self.num_epochs):
             output = self.network.forward_propagate(x_batch)
             loss = self.network.loss_function(len(y_batch), y_batch, output)
