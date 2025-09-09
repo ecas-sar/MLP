@@ -10,7 +10,7 @@ class Network:
         self.hidden_layer_one = Layer.Layer(300, 100, "RELU")
         self.hidden_layer_two = Layer.Layer(100, 100, "RELU")
         self.hidden_layer_three = Layer.Layer(100, 100, "RELU")
-        self.output_layer = Layer.Layer(100, 10, "SIGMOID", True)
+        self.output_layer = Layer.Layer(100, 10, "LINEAR", True)
         self.layers = []
         self.fill_layers()
 
@@ -28,10 +28,13 @@ class Network:
         '''Forward progpogates each layer in the network.
         Parameters: Int
         Return: Int'''
-        for layer in self.layers:
+        for i, layer in enumerate(self.layers):
             inputs = layer.forward_propagate(inputs)
+            # print(f"Layer {i} output - mean: {np.mean(inputs):.4f}, max: {np.max(inputs):.4f}")
+            # White box testing to see where values spike.
             if layer.output_layer == True:
                 inputs = layer.softmax(inputs)
+                # print(inputs) White box testing to see why loss is 0.
         return inputs
     
     def backward_propagate(self, loss_grad, learning_rate):

@@ -5,8 +5,8 @@ import numpy as np
 class Node:
     def __init__(self, num_inputs, activation_function="SIGMOID"):
         # Weights and biases chosen randomly so that every neuron doesn't remain the same. Stored in an np array to avoid nans.
-        self.weights = np.random.uniform(-1, 1, size=(num_inputs,))
-        self.bias = random.uniform(-1, 1)
+        self.weights = np.random.uniform(0, 0.05, size=(num_inputs,))
+        self.bias = random.uniform(0, 0.05)
 
         # Creates activation function, sets it to upper case to account for capitalisation differences.
         self.activation_function = activation_function.upper()
@@ -59,16 +59,18 @@ class Node:
         return self.output
 
     def backward_propagate(self, inputs, output_error, learning_rate):
-        output_predicted = self.forward_propagate(inputs)
-        output_delta = output_error * self.activation_derivative(output_predicted)
+        if inputs.ndim > 1:
+            inputs = inputs.flatten()
 
-        hidden_error = np.dot(output_delta, self.weights)
-        hidden_delta = hidden_error*self.activation_derivative(output_predicted)
+        output_delta = output_error * self.activation_derivative(self.output)
+
+        hidden_error = np.dot(self.weights, output_delta)
+        hidden_delta = hidden_error*self.activation_derivative(self.output)
 
         weight_grad = np.dot(inputs.T, hidden_delta) # np.dot is ok for Stochastic Gradient Descent, but this may need to be outer for mini-batch training.
         bias_grad = output_delta
         
         self.weights -= learning_rate * np.clip(weight_grad, -1, 1)
-        self.bias -= learning_rate * np.clip(bias_grad, -1, 1)
+        self.bias -= learning_rate * output_delta
 
         return output_delta*self.weights

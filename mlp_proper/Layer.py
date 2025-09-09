@@ -22,4 +22,5 @@ class Layer:
         shifted_inputs = inputs - np.max(inputs)
         numerator = np.exp(shifted_inputs)
         denominator = np.sum(numerator)
+        # print(numerator/denominator) White box testing to see why softmax is turning everything 0.
         return numerator/denominator
